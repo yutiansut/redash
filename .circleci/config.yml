@@ -45,6 +45,14 @@ jobs:
           path: /tmp/test-results
       - store_artifacts:
           path: coverage.xml
+  backend-py3-tests:
+    docker:
+      - image: circleci/python:3.7.0
+      - image: postgres:9.5.6-alpine
+      - image: redis:3.0-alpine
+    steps:
+      - run: pip install -r requirements.txt -r requirements_dev.txt -r requirements_all_ds.txt
+      - run: pytest
   frontend-lint:
     docker:
       - image: circleci/node:8
