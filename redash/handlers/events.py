@@ -1,3 +1,4 @@
+from builtins import str
 from flask import request
 from geoip import geolite2
 from user_agents import parse as parse_ua

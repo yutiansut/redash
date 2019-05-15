@@ -1,3 +1,4 @@
+from builtins import object
 import hashlib
 import itertools
 import logging
@@ -69,8 +70,7 @@ class PermissionsCheckMixin(object):
 
     def has_permissions(self, permissions):
         has_permissions = reduce(lambda a, b: a and b,
-                                 map(lambda permission: permission in self.permissions,
-                                     permissions),
+                                 [permission in self.permissions for permission in permissions],
                                  True)
 
         return has_permissions

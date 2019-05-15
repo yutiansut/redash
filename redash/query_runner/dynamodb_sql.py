@@ -1,3 +1,5 @@
+from builtins import str
+from past.builtins import basestring
 import logging
 import sys
 
@@ -93,7 +95,7 @@ class DynamoDBSQL(BaseSQLQueryRunner):
             try:
                 table = engine.describe(table_name, True)
                 schema[table.name] = {'name': table.name,
-                                      'columns': table.attrs.keys()}
+                                      'columns': list(table.attrs.keys())}
             except DynamoDBError:
                 pass
 
@@ -119,7 +121,7 @@ class DynamoDBSQL(BaseSQLQueryRunner):
 
             for item in result:
                 if not columns:
-                    for k, v in item.iteritems():
+                    for k, v in item.items():
                         columns.append({
                             'name': k,
                             'friendly_name': k,

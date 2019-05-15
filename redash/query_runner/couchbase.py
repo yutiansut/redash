@@ -1,3 +1,4 @@
+from builtins import str
 import datetime
 import logging
 
@@ -17,9 +18,9 @@ except ImportError as e:
 
 TYPES_MAP = {
     str: TYPE_STRING,
-    unicode: TYPE_STRING,
+    str: TYPE_STRING,
     int: TYPE_INTEGER,
-    long: TYPE_INTEGER,
+    int: TYPE_INTEGER,
     float: TYPE_FLOAT,
     bool: TYPE_BOOLEAN,
     datetime.datetime: TYPE_DATETIME,
@@ -124,7 +125,7 @@ class Couchbase(BaseQueryRunner):
             table_name = row.get(name_param)
             schema[table_name] = {'name': table_name, 'columns': defaultColumns}
 
-        return schema.values()
+        return list(schema.values())
 
     def get_schema(self, get_stats=False):
 

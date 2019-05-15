@@ -1,8 +1,10 @@
+from future import standard_library
+standard_library.install_aliases()
 import logging
 import os
 import sys
-import urllib
-import urlparse
+import urllib.request, urllib.parse, urllib.error
+import urllib.parse
 
 import redis
 from flask_mail import Mail
@@ -37,10 +39,10 @@ def setup_logging():
 
 def create_redis_connection():
     logging.debug("Creating Redis connection (%s)", settings.REDIS_URL)
-    redis_url = urlparse.urlparse(settings.REDIS_URL)
+    redis_url = urllib.parse.urlparse(settings.REDIS_URL)
 
     if redis_url.scheme == 'redis+socket':
-        qs = urlparse.parse_qs(redis_url.query)
+        qs = urllib.parse.parse_qs(redis_url.query)
         if 'virtual_host' in qs:
             db = qs['virtual_host'][0]
         else:
@@ -53,7 +55,7 @@ def create_redis_connection():
         else:
             redis_db = 0
         # Redis passwords might be quoted with special characters
-        redis_password = redis_url.password and urllib.unquote(redis_url.password)
+        redis_password = redis_url.password and urllib.parse.unquote(redis_url.password)
         client = redis.StrictRedis(host=redis_url.hostname, port=redis_url.port, db=redis_db, password=redis_password)
 
     return client

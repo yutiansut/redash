@@ -1,3 +1,4 @@
+from builtins import object
 import requests
 from redash.query_runner import *
 from redash.utils import json_dumps
@@ -79,9 +80,9 @@ class Rockset(BaseSQLQueryRunner):
         for col in self.api.list():
             table_name = col['name']
             describe = self.api.query('DESCRIBE "{}"'.format(table_name))
-            columns = list(set(map(lambda x: x['field'][0], describe['results'])))
+            columns = list(set([x['field'][0] for x in describe['results']]))
             schema[table_name] = {'name': table_name, 'columns': columns}
-        return schema.values()
+        return list(schema.values())
 
     def run_query(self, query, user):
         results = self.api.query(query)

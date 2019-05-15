@@ -1,3 +1,5 @@
+from builtins import str
+from past.builtins import basestring
 import datetime
 import logging
 import re
@@ -24,9 +26,9 @@ except ImportError:
 
 TYPES_MAP = {
     str: TYPE_STRING,
-    unicode: TYPE_STRING,
+    str: TYPE_STRING,
     int: TYPE_INTEGER,
-    long: TYPE_INTEGER,
+    int: TYPE_INTEGER,
     float: TYPE_FLOAT,
     bool: TYPE_BOOLEAN,
     datetime.datetime: TYPE_DATETIME,
@@ -55,7 +57,7 @@ def parse_oids(oids):
 
 
 def datetime_parser(dct):
-    for k, v in dct.iteritems():
+    for k, v in dct.items():
         if isinstance(v, basestring):
             m = date_regex.findall(v)
             if len(m) > 0:
@@ -218,7 +220,7 @@ class MongoDB(BaseQueryRunner):
             schema[collection_name] = {
                 "name": collection_name, "columns": sorted(columns)}
 
-        return schema.values()
+        return list(schema.values())
 
 
     def run_query(self, query, user):

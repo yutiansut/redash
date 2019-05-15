@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import filter
 import logging
 from base64 import b64decode
 from datetime import datetime
-from urlparse import parse_qs, urlparse
+from urllib.parse import parse_qs, urlparse
 
 from redash.query_runner import *
 from redash.utils import json_dumps, json_loads
@@ -133,7 +136,7 @@ class GoogleAnalytics(BaseSQLQueryRunner):
                             u'{0} (ga:{1})'.format(property_['name'], property_['defaultProfileId'])
                         )
 
-        return schema.values()
+        return list(schema.values())
 
     def test_connection(self):
         try:
@@ -149,7 +152,7 @@ class GoogleAnalytics(BaseSQLQueryRunner):
             params = json_loads(query)
         except:
             params = parse_qs(urlparse(query).query, keep_blank_values=True)
-            for key in params.keys():
+            for key in list(params.keys()):
                 params[key] = ','.join(params[key])
                 if '-' in key:
                     params[key.replace('-', '_')] = params.pop(key)

@@ -1,3 +1,4 @@
+from builtins import str
 import os
 import logging
 import re
@@ -26,12 +27,12 @@ def convert_type(string_value, actual_type):
         return float(string_value)
 
     if actual_type == TYPE_BOOLEAN:
-        return unicode(string_value).lower() == 'true'
+        return str(string_value).lower() == 'true'
 
     if actual_type == TYPE_DATETIME:
         return parser.parse(string_value)
 
-    return unicode(string_value)
+    return str(string_value)
 
 
 # Parse Drill API response and translate it to accepted format
@@ -53,7 +54,7 @@ def parse_response(data):
         types[col['name']] = col['type']
 
     for row in rows:
-        for key, value in row.iteritems():
+        for key, value in row.items():
             row[key] = convert_type(value, types[key])
 
     return {'columns': columns, 'rows': rows}
@@ -118,7 +119,7 @@ class Drill(BaseHTTPQueryRunner):
         """
         allowed_schemas = self.configuration.get('allowed_schemas')
         if allowed_schemas:
-            query += "and TABLE_SCHEMA in ({})".format(', '.join(map(lambda x: "'{}'".format(re.sub('[^a-zA-Z0-9_.`]', '', x)), allowed_schemas.split(','))))
+            query += "and TABLE_SCHEMA in ({})".format(', '.join(["'{}'".format(re.sub('[^a-zA-Z0-9_.`]', '', x)) for x in allowed_schemas.split(',')]))
 
         results, error = self.run_query(query, None)
 
@@ -137,7 +138,7 @@ class Drill(BaseHTTPQueryRunner):
 
             schema[table_name]['columns'].append(row['COLUMN_NAME'])
 
-        return schema.values()
+        return list(schema.values())
 
 
 register(Drill)

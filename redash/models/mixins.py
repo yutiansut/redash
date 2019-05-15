@@ -1,3 +1,4 @@
+from builtins import object
 from sqlalchemy.event import listens_for
 
 from .base import db, Column

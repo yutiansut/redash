@@ -1,8 +1,12 @@
 from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import zip
 import time
 import requests
 import logging
-from cStringIO import StringIO
+from io import StringIO
 
 from redash.query_runner import BaseQueryRunner, register
 from redash.query_runner import TYPE_STRING
@@ -90,7 +94,7 @@ class Qubole(BaseQueryRunner):
 
                 data = results.split('\r\n')
                 columns = self.fetch_columns([(i, TYPE_STRING) for i in data.pop(0).split('\t')])
-                rows = [dict(zip((c['name'] for c in columns), row.split('\t'))) for row in data]
+                rows = [dict(list(zip((c['name'] for c in columns), row.split('\t')))) for row in data]
 
             json_data = json_dumps({'columns': columns, 'rows': rows})
         except KeyboardInterrupt:
@@ -112,7 +116,7 @@ class Qubole(BaseQueryRunner):
             for schema in data['schemas']:
                 tables = data['schemas'][schema]
                 for table in tables:
-                    table_name = table.keys()[0]
+                    table_name = list(table.keys())[0]
                     columns = [f['name'] for f in table[table_name]['columns']]
 
                     if schema != 'default':
@@ -123,7 +127,7 @@ class Qubole(BaseQueryRunner):
         except Exception as e:
             logging.error("Failed to get schema information from Qubole. Error {}".format(str(e)))
 
-        return schemas.values()
+        return list(schemas.values())
 
     def _get_header(self):
         return {"Content-type": "application/json", "Accept": "application/json",

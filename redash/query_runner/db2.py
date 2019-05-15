@@ -1,3 +1,4 @@
+from builtins import zip
 import logging
 
 from redash.query_runner import *
@@ -105,7 +106,7 @@ class DB2(BaseSQLQueryRunner):
         """
         self._get_definitions(schema, query)
 
-        return schema.values()
+        return list(schema.values())
 
     def _get_connection(self):
         self.connection_string = "DATABASE={};HOSTNAME={};PORT={};PROTOCOL=TCPIP;UID={};PWD={};".format(
@@ -123,7 +124,7 @@ class DB2(BaseSQLQueryRunner):
 
             if cursor.description is not None:
                 columns = self.fetch_columns([(i[0], types_map.get(i[1], None)) for i in cursor.description])
-                rows = [dict(zip((c['name'] for c in columns), row)) for row in cursor]
+                rows = [dict(list(zip((c['name'] for c in columns), row))) for row in cursor]
 
                 data = {'columns': columns, 'rows': rows}
                 error = None

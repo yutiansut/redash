@@ -1,3 +1,6 @@
+from builtins import next
+from builtins import str
+from builtins import zip
 from io import StringIO
 import logging
 import sys
@@ -69,7 +72,7 @@ def generate_rows_and_columns(csv_response):
                 'name': i['name']}
                for i in meta_columns]
     column_names = [c['name'] for c in columns]
-    rows = [dict(zip(column_names, row)) for row in reader]
+    rows = [dict(list(zip(column_names, row))) for row in reader]
     return columns, rows
 
 
@@ -192,7 +195,7 @@ class AxibaseTSD(BaseQueryRunner):
         for table_name in metrics_list:
             schema[table_name] = {'name': "'{}'".format(table_name),
                                   'columns': default_columns}
-        values = schema.values()
+        values = list(schema.values())
         return values
 
 register(AxibaseTSD)

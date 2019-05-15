@@ -1,5 +1,10 @@
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import range
+from builtins import object
 import codecs
-import cStringIO
+import io
 import csv
 import datetime
 import decimal
@@ -131,7 +136,7 @@ def build_url(request, host, path):
     return "{}://{}{}".format(request.scheme, host, path)
 
 
-class UnicodeWriter:
+class UnicodeWriter(object):
     """
     A CSV writer which will write rows to CSV file "f",
     which is encoded in the given encoding.
@@ -139,7 +144,7 @@ class UnicodeWriter:
 
     def __init__(self, f, dialect=csv.excel, encoding=WRITER_ENCODING, **kwds):
         # Redirect output to a queue
-        self.queue = cStringIO.StringIO()
+        self.queue = io.StringIO()
         self.writer = csv.writer(self.queue, dialect=dialect, **kwds)
         self.stream = f
         self.encoder = codecs.getincrementalencoder(encoding)()
@@ -170,7 +175,7 @@ class UnicodeWriter:
 def collect_parameters_from_request(args):
     parameters = {}
 
-    for k, v in args.iteritems():
+    for k, v in args.items():
         if k.startswith('p_'):
             parameters[k[2:]] = v
 

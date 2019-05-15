@@ -1,3 +1,4 @@
+from builtins import object
 import functools
 
 from flask_sqlalchemy import BaseQuery, SQLAlchemy

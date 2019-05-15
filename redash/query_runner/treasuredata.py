@@ -1,3 +1,4 @@
+from builtins import zip
 import logging
 
 from redash.query_runner import *
@@ -89,7 +90,7 @@ class TreasureData(BaseQueryRunner):
                             }
             except Exception as ex:
                 raise Exception("Failed getting schema")
-        return schema.values()
+        return list(schema.values())
 
     def run_query(self, query, user):
         connection = tdclient.connect(
@@ -107,7 +108,7 @@ class TreasureData(BaseQueryRunner):
             if cursor.rowcount == 0:
                 rows = []
             else:
-                rows = [dict(zip(([c['name'] for c in columns]), r)) for i, r in enumerate(cursor.fetchall())]
+                rows = [dict(list(zip(([c['name'] for c in columns]), r))) for i, r in enumerate(cursor.fetchall())]
             data = {'columns': columns, 'rows': rows}
             json_data = json_dumps(data)
             error = None

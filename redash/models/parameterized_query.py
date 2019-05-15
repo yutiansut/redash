@@ -1,3 +1,8 @@
+from builtins import next
+from builtins import map
+from builtins import str
+from past.builtins import basestring
+from builtins import object
 import pystache
 from functools import partial
 from flask_restful import abort
@@ -9,11 +14,11 @@ from dateutil.parser import parse
 
 
 def _pluck_name_and_value(default_column, row):
-    row = {k.lower(): v for k, v in row.items()}
-    name_column = "name" if "name" in row.keys() else default_column.lower()
-    value_column = "value" if "value" in row.keys() else default_column.lower()
+    row = {k.lower(): v for k, v in list(row.items())}
+    name_column = "name" if "name" in list(row.keys()) else default_column.lower()
+    value_column = "value" if "value" in list(row.keys()) else default_column.lower()
 
-    return {"name": row[name_column], "value": unicode(row[value_column])}
+    return {"name": row[name_column], "value": str(row[value_column])}
 
 
 def _load_result(query_id):
@@ -33,7 +38,7 @@ def dropdown_values(query_id):
     data = _load_result(query_id)
     first_column = data["columns"][0]["name"]
     pluck = partial(_pluck_name_and_value, first_column)
-    return map(pluck, data["rows"])
+    return list(map(pluck, data["rows"]))
 
 
 def _collect_key_names(nodes):
@@ -56,9 +61,9 @@ def _collect_query_parameters(query):
 
 def _parameter_names(parameter_values):
     names = []
-    for key, value in parameter_values.iteritems():
+    for key, value in parameter_values.items():
         if isinstance(value, dict):
-            for inner_key in value.keys():
+            for inner_key in list(value.keys()):
                 names.append(u'{}.{}'.format(key, inner_key))
         else:
             names.append(key)
@@ -100,7 +105,7 @@ class ParameterizedQuery(object):
         self.parameters = {}
 
     def apply(self, parameters):
-        invalid_parameter_names = [key for (key, value) in parameters.iteritems() if not self._valid(key, value)]
+        invalid_parameter_names = [key for (key, value) in parameters.items() if not self._valid(key, value)]
         if invalid_parameter_names:
             raise InvalidParameterError(invalid_parameter_names)
         else:
@@ -122,7 +127,7 @@ class ParameterizedQuery(object):
             "text": lambda value: isinstance(value, basestring),
             "number": _is_number,
             "enum": lambda value: value in definition["enumOptions"],
-            "query": lambda value: unicode(value) in [v["value"] for v in dropdown_values(definition["queryId"])],
+            "query": lambda value: str(value) in [v["value"] for v in dropdown_values(definition["queryId"])],
             "date": _is_date,
             "datetime-local": _is_date,
             "datetime-with-seconds": _is_date,
@@ -137,7 +142,7 @@ class ParameterizedQuery(object):
 
     @property
     def is_safe(self):
-        text_parameters = filter(lambda p: p["type"] == "text", self.schema)
+        text_parameters = [p for p in self.schema if p["type"] == "text"]
         return not any(text_parameters)
 
     @property

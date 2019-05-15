@@ -1,4 +1,8 @@
-import cStringIO
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import object
+import io
 import csv
 import datetime
 import calendar
@@ -213,7 +217,7 @@ class DataSource(BelongsToOrgMixin, db.Model):
         groups = DataSourceGroup.query.filter(
             DataSourceGroup.data_source == self
         )
-        return dict(map(lambda g: (g.group_id, g.view_only), groups))
+        return dict([(g.group_id, g.view_only) for g in groups])
 
 
 @generic_repr('id', 'data_source_id', 'group_id', 'view_only')
@@ -323,7 +327,7 @@ class QueryResult(db.Model, BelongsToOrgMixin):
         return self.data_source.groups
 
     def make_csv_content(self):
-        s = cStringIO.StringIO()
+        s = io.StringIO()
 
         query_data = json_loads(self.data)
         writer = csv.DictWriter(s, extrasaction="ignore", fieldnames=[col['name'] for col in query_data['columns']])
@@ -335,7 +339,7 @@ class QueryResult(db.Model, BelongsToOrgMixin):
         return s.getvalue()
 
     def make_excel_content(self):
-        s = cStringIO.StringIO()
+        s = io.StringIO()
 
         query_data = json_loads(self.data)
         book = xlsxwriter.Workbook(s, {'constant_memory': True})
@@ -584,7 +588,7 @@ class Query(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model):
                 key = "{}:{}".format(query.query_hash, query.data_source_id)
                 outdated_queries[key] = query
 
-        return outdated_queries.values()
+        return list(outdated_queries.values())
 
     @classmethod
     def search(cls, term, group_ids, user_id=None, include_drafts=False,
@@ -729,7 +733,7 @@ class Favorite(TimestampMixin, db.Model):
             return []
 
         object_type = text_type(objects[0].__class__.__name__)
-        return map(lambda fav: fav.object_id, cls.query.filter(cls.object_id.in_(map(lambda o: o.id, objects)), cls.object_type == object_type, cls.user_id == user))
+        return [fav.object_id for fav in cls.query.filter(cls.object_id.in_([o.id for o in objects]), cls.object_type == object_type, cls.user_id == user)]
 
 
 @generic_repr('id', 'name', 'query_id', 'user_id', 'state', 'last_triggered_at', 'rearm')

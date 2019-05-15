@@ -1,3 +1,4 @@
+from builtins import object
 from sqlalchemy.inspection import inspect
 from sqlalchemy_utils.models import generic_repr
 

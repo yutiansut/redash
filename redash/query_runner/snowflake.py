@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 
+from builtins import zip
 try:
     import snowflake.connector
     enabled = True
@@ -85,7 +86,7 @@ class Snowflake(BaseQueryRunner):
 
             columns = self.fetch_columns(
                 [(i[0], TYPES_MAP.get(i[1], None)) for i in cursor.description])
-            rows = [dict(zip((c['name'] for c in columns), row))
+            rows = [dict(list(zip((c['name'] for c in columns), row)))
                     for row in cursor]
 
             data = {'columns': columns, 'rows': rows}
@@ -122,7 +123,7 @@ class Snowflake(BaseQueryRunner):
 
             schema[table_name]['columns'].append(row['COLUMN_NAME'])
 
-        return schema.values()
+        return list(schema.values())
 
 
 register(Snowflake)

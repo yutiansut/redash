@@ -1,3 +1,4 @@
+from builtins import zip
 import logging
 import re
 import sqlite3
@@ -143,7 +144,7 @@ class Results(BaseQueryRunner):
                         elif columns[j]['type'] != guess:
                             columns[j]['type'] = TYPE_STRING
 
-                    rows.append(dict(zip(column_names, row)))
+                    rows.append(dict(list(zip(column_names, row))))
 
                 data = {'columns': columns, 'rows': rows}
                 error = None
