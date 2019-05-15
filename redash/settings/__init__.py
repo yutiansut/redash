@@ -1,6 +1,7 @@
 from builtins import map
 from builtins import str
 import os
+import logging
 import importlib
 from funcy import distinct, remove
 from flask_talisman import talisman
@@ -181,7 +182,7 @@ STATIC_ASSETS_PATH = fix_assets_path(os.environ.get("REDASH_STATIC_ASSETS_PATH",
 
 JOB_EXPIRY_TIME = int(os.environ.get("REDASH_JOB_EXPIRY_TIME", 3600 * 12))
 
-LOG_LEVEL = os.environ.get("REDASH_LOG_LEVEL", "INFO")
+LOG_LEVEL = getattr(logging, os.environ.get("REDASH_LOG_LEVEL", "INFO"), "INFO")
 LOG_STDOUT = parse_boolean(os.environ.get('REDASH_LOG_STDOUT', 'false'))
 LOG_PREFIX = os.environ.get('REDASH_LOG_PREFIX', '')
 LOG_FORMAT = os.environ.get('REDASH_LOG_FORMAT', LOG_PREFIX + '[%(asctime)s][PID:%(process)d][%(levelname)s][%(name)s] %(message)s')
