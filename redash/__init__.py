@@ -3,7 +3,9 @@ standard_library.install_aliases()
 import logging
 import os
 import sys
-import urllib.request, urllib.parse, urllib.error
+import urllib.request
+import urllib.parse
+import urllib.error
 import urllib.parse
 
 import redis
@@ -32,9 +34,9 @@ def setup_logging():
     logging.getLogger().setLevel(settings.LOG_LEVEL)
 
     # Make noisy libraries less noisy
-    if settings.LOG_LEVEL != "DEBUG":
+    if settings.LOG_LEVEL != logging.DEBUG:
         for name in ["passlib", "requests.packages.urllib3", "snowflake.connector", "apiclient"]:
-            logging.getLogger(name).setLevel("ERROR")
+            logging.getLogger(name).setLevel(logging.ERROR)
 
 
 def create_redis_connection():

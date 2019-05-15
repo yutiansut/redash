@@ -23,8 +23,8 @@ from redash.utils import json_dumps, json_loads
 from tests.factories import Factory, user_factory
 
 
-logging.disable("INFO")
-logging.getLogger("metrics").setLevel("ERROR")
+logging.disable(logging.INFO)
+logging.getLogger("metrics").setLevel(logging.ERROR)
 
 
 def authenticate_request(c, user):
