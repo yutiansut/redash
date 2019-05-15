@@ -126,6 +126,7 @@ workflows:
       - python-flake8-tests
       - legacy-python-flake8-tests
       - backend-unit-tests
+      - backend-py3-tests
       - frontend-lint
       - frontend-unit-tests:
           requires:
