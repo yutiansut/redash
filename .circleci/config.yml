@@ -52,6 +52,7 @@ jobs:
       - image: redis:3.0-alpine
     steps:
       - checkout
+      - run: sudo apt-get install libsasl2-dev
       - run: pip install -r requirements.txt -r requirements_dev.txt -r requirements_all_ds.txt
       - run: pytest
   frontend-lint:
