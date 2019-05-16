@@ -88,11 +88,11 @@ class DataSource(BelongsToOrgMixin, db.Model):
     __tablename__ = 'data_sources'
     __table_args__ = (db.Index('data_sources_org_id_name', 'org_id', 'name'),)
 
-    def __eq__(self, other):
-        return self.id == other.id
+    # def __eq__(self, other):
+    #     return self.id == other.id
 
-    def __hash__(self):
-        return hash(self.id)
+    # def __hash__(self):
+    #     return hash(self.id)
 
     def to_dict(self, all=False, with_permissions_for=None):
         d = {
