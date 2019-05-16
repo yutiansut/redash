@@ -52,7 +52,7 @@ jobs:
       - image: redis:3.0-alpine
     environment:
       REDASH_REDIS_URL: "redis://localhost:6379/0"
-      REDASH_DATABASE_URL: "postgresql:///postgres"
+      REDASH_DATABASE_URL: "postgresql://postgres@localhost/postgres"
     steps:
       - checkout
       - run: sudo apt-get install libsasl2-dev
