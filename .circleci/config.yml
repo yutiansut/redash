@@ -56,7 +56,18 @@ jobs:
     steps:
       - checkout
       - run: sudo apt-get install libsasl2-dev
-      - run: sudo pip install -r requirements.txt -r requirements_dev.txt -r requirements_all_ds.txt
+      - restore_cache:
+          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}-{{ checksum "requirements_dev.txt" }}-{{ checksum "requirements_all_ds.txt" }}
+      - run:
+          name: Install Python deps in a venv
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt -r requirements_dev.txt -r requirements_all_ds.txt
+      - save_cache:
+          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}-{{ checksum "requirements_dev.txt" }}-{{ checksum "requirements_all_ds.txt" }}
+          paths:
+            - "venv"
       - run: pytest
   frontend-lint:
     docker:
