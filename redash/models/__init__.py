@@ -235,7 +235,13 @@ class DataSourceGroup(db.Model):
 class DBPersistence(object):
     @property
     def data(self):
-        return self._data
+        if self._data is None:
+            return None
+
+        if not hasattr(self, '_deserialized_data'):
+            self._deserialized_data = json_loads(self._data)
+            
+        return self._deserialized_data
 
     @data.setter
     def data(self, data):
@@ -268,7 +274,7 @@ class QueryResult(db.Model, BelongsToOrgMixin, QueryResultPersistence):
             'id': self.id,
             'query_hash': self.query_hash,
             'query': self.query_text,
-            'data': json_loads(self.data),
+            'data': self.data,
             'data_source_id': self.data_source_id,
             'runtime': self.runtime,
             'retrieved_at': self.retrieved_at
@@ -810,7 +816,7 @@ class Alert(TimestampMixin, BelongsToOrgMixin, db.Model):
         return super(Alert, cls).get_by_id_and_org(object_id, org, Query)
 
     def evaluate(self):
-        data = json_loads(self.query_rel.latest_query_data.data)
+        data = self.query_rel.latest_query_data.data
 
         if data['rows'] and self.options['column'] in data['rows'][0]:
             operators = {
@@ -846,7 +852,7 @@ class Alert(TimestampMixin, BelongsToOrgMixin, db.Model):
     def render_template(self):
         if not self.template:
             return ''
-        data = json_loads(self.query_rel.latest_query_data.data)
+        data = self.query_rel.latest_query_data.data
         context = {'rows': data['rows'], 'cols': data['columns'], 'state': self.state}
         return mustache_render(self.template, context)
 
